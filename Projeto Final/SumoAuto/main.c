@@ -22,33 +22,33 @@ int main () {
     for (;;) {
         if(estrategia == 0){
             if(line_sensors[0] > 500){
-               virarEsquerda();
+               virarDireita();
             }
             if(line_sensors[1] > 500){
-                virarDireita();               
+                virarEsquerda();               
             }
-            if(distance_sensors[0]> 1000 || distance_sensors[1] > 1000){
+            if(distance_sensors[0]> 1000 && distance_sensors[1] > 1000){
                 motors(255,255);
             }else{
                 motors(-255, 255);
             }
         }else{
             if(line_sensors[0] > 500){
-                motors(50, 0);
+                virarDireita();
             }
             if(line_sensors[1] > 500){
-                motors(40, 0);
+                virarEsquerda();
             }
             if(distance_sensors[0]> 1000){
                 relogio = get_tick() + 400;
                 while(relogio > get_tick()){
                     update_line_sensors();
-                    if(line_sensors[0] < 500 || line_sensors[1] < 500)
+                    if(line_sensors[0] < 500 && line_sensors[1] < 500)
                     motors(255,-255);
                     else if (line_sensors[0] > 500){
-                        virarEsquerda();
-                    }else if{
                         virarDireita();
+                    }else if{
+                        virarEsquerda();
                     }
                     relogio ++;
                 }

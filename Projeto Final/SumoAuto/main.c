@@ -7,11 +7,11 @@
 #include "timer.h"
 
 void virarEsquerda(){
-
+     motors(0, 50);
 }
 
 void virarDireita(){
-    
+     motors(50, 0);
 }
 
 int main () {
@@ -22,10 +22,10 @@ int main () {
     for (;;) {
         if(estrategia == 0){
             if(line_sensors[0] > 500){
-                motors(50, 0);
+               virarEsquerda();
             }
             if(line_sensors[1] > 500){
-                motors(0, 50);
+                virarDireita();               
             }
             if(distance_sensors[0]> 1000 || distance_sensors[1] > 1000){
                 motors(255,255);
@@ -43,10 +43,10 @@ int main () {
                 relogio = get_tick() + 400;
                 while(relogio > get_tick()){
                     update_line_sensors();
-                    if(sensors[0] < 500 || sensors[1] < 500)
+                    if(line_sensors[0] < 500 || line_sensors[1] < 500)
                     motors(255,-255);
-                    else if (sensors[0] > 500){
-                        virarEsquerda()
+                    else if (line_sensors[0] > 500){
+                        virarEsquerda();
                     }else if{
                         virarDireita();
                     }
@@ -57,9 +57,24 @@ int main () {
                     motors(255,255);
                     relogio ++;
                 }
-               //motors();
             }else if(distance_sensors[1] > 1000){
-                //motors();
+                  relogio = get_tick() + 400;
+                while(relogio > get_tick()){
+                    update_line_sensors();
+                    if(line_sensors[0] < 500 || line_sensors[1] < 500)
+                    motors(255,-255);
+                    else if (line_sensors[0] > 500){
+                        virarEsquerda();
+                    }else if{
+                        virarDireita();
+                    }
+                    relogio ++;
+                }
+                relogio = get_tick() + 400;
+                while(relogio > get_tick()){
+                    motors(255,255);
+                    relogio ++;
+                }
             }else{
                 motors(-255, 255);
             }

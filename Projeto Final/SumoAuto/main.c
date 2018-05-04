@@ -8,7 +8,7 @@
 
 #define VEL_MAX 150
 #define LINE_THRESHOLD 200
-#define DISTANCE_THRESHOLD 300
+#define DISTANCE_THRESHOLD 100
 
 int facing(){ //funçao que verifica se o adversario esta frente a frente
 

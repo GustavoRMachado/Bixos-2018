@@ -5,56 +5,60 @@
 #include "sensors.h"
 #include "motors.h"
 #include "timer.h"
+#include "usart.h"
 
-#define VEL_MAX 200
-#define LINE_THRESHOLD 200
-#define DISTANCE_THRESHOLD 1600
+#define VEL_MAX 180
+#define VEL_MED 120
+#define LINE_THRESHOLD 600
+#define DISTANCE_THRESHOLD 400
+
+void check_edge(){
+    
+    update_line_sensors();
+
+    if (line_sensors[0] < LINE_THRESHOLD && line_sensors[1] < LINE_THRESHOLD){
+        motors (-VEL_MED, -VEL_MED);
+        _delay_ms(400);
+    }
+
+    if (line_sensors[0] < LINE_THRESHOLD && line_sensors[1] > LINE_THRESHOLD){
+        motors (VEL_MED, -VEL_MED);
+        _delay_ms(350);
+    }
+
+    if (line_sensors[0] > LINE_THRESHOLD && line_sensors[1] < LINE_THRESHOLD){
+        motors (-VEL_MED, VEL_MED);
+        _delay_ms(350);
+    }
+}
 
 int facing(){ //funçao que verifica se o adversario esta frente a frente
 
     update_distance_sensors();
 
-    return (distance_sensors[0] > DISTANCE_THRESHOLD && distance_sensors[1] > DISTANCE_THRESHOLD);
+    return (distance_sensors[0] > DISTANCE_THRESHOLD || distance_sensors[1] > DISTANCE_THRESHOLD);
 }
 
 void search(){ //funçao que gira o sumo ate ficar de frente para o adversario
 
-    while (!facing()){
-        motors (0, VEL_MAX/2);
-    }
-    motors (0, 0);
-}
-
-void turn_left(){ //funçao para girar para a esquerda
-     motors(20, VEL_MAX);
-}
-
-void turn_right(){ //funçao para girar para a direita
-     motors(VEL_MAX, 20);
+        motors (0, VEL_MED);
 }
 
 int main () {
+    
     motors_init();
     timer_init();
     sensors_init();
-   
+    usart_init();
+
     for (;;) {
-
-        update_line_sensors();
-
-	if (line_sensors[0] < LINE_THRESHOLD && line_sensors[1] < LINE_THRESHOLD) //se ler a linha pelos dois sensores, anda para trás
-	    motors (-VEL_MAX, -VEL_MAX);
-
-	    else if (line_sensors[0] < LINE_THRESHOLD) //se ler a linha do lado esquerdo, virar para a direita
-            turn_right();
-
-	    else if (line_sensors[1] < LINE_THRESHOLD) //se ler a linha do lado direito, virar para a esquerda
-            turn_left();
+        
+        check_edge();
 
         if (facing()) //se estiver de frente para o adversario, acelera em direção a ele
-            motors (VEL_MAX, VEL_MAX);
+           motors (VEL_MAX, VEL_MAX);
         else
-            search(); //se não estiver de frente, procura o adversario
+           search(); //se não estiver de frente, procura o adversario
     }
 
     return 0;

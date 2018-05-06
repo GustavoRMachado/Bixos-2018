@@ -1,4 +1,4 @@
-MCU = atmega168
+MCU = atmega8
 
 all : main.hex
 
@@ -7,22 +7,22 @@ main.elf : main.o hardware.o motors.o sensors.o timer.o utils.o
  -mmcu=$(MCU) -std=c99 -Wall -Wextra -Os
 
 main.o : main.c hardware.h motors.h sensors.h utils.h timer.h
-	avr-gcc -c main.c -o main.o -mmcu=$(MCU) -std=c99 -Wall -Wextra -Os
+	avr-gcc -DF_CPU=8000000 -c main.c -o main.o -mmcu=$(MCU) -std=c99 -Wall -Wextra -Os
 
 hardware.o : hardware.c hardware.h motors.h sensors.h timer.h
-	avr-gcc -c hardware.c -o hardware.o -mmcu=$(MCU)  -std=c99 -Wall -Wextra -Os
+	avr-gcc -DF_CPU=8000000 -c hardware.c -o hardware.o -mmcu=$(MCU)  -std=c99 -Wall -Wextra -Os
 
 motors.o : motors.c motors.h hardware.h utils.h
-	avr-gcc -c motors.c -o motors.o -mmcu=$(MCU)  -std=c99 -Wall -Wextra -Os
+	avr-gcc -DF_CPU=8000000 -c motors.c -o motors.o -mmcu=$(MCU)  -std=c99 -Wall -Wextra -Os
 
 sensors.o : sensors.c sensors.h utils.h
-	avr-gcc -c sensors.c -o sensors.o -mmcu=$(MCU) -std=c99 -Wall -Wextra -Os
+	avr-gcc -DF_CPU=8000000 -c sensors.c -o sensors.o -mmcu=$(MCU) -std=c99 -Wall -Wextra -Os
 
 timer.o : timer.c timer.h
-	avr-gcc -c timer.c -o timer.o -mmcu=$(MCU) -std=c99 -Wall -Wextra -Os
+	avr-gcc -DF_CPU=8000000  -c timer.c -o timer.o -mmcu=$(MCU) -std=c99 -Wall -Wextra -Os
 
 utils.o : utils.c utils.h
-	avr-gcc -c utils.c -o utils.o -mmcu=$(MCU) -std=c99 -Wall -Wextra -Os
+	avr-gcc -DF_CPU=8000000 -c utils.c -o utils.o -mmcu=$(MCU) -std=c99 -Wall -Wextra -Os
 
 main.hex : main.elf
 	avr-objcopy -j .text -j .data -O ihex main.elf main.hex

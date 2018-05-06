@@ -9,8 +9,10 @@ ISR(TIMER2_OVF_vect) {
 
 /* inicializa o timer */
 void timer_init() {
-    TCCR2B = (1 << CS20);  // sem prescaler
-    TIMSK2 |= 1 << TOIE2;
+    //TCCR2B = (1 << CS20);  // sem prescaler
+    //TIMSK2 |= 1 << TOIE2;
+    TCCR2 = (1 << CS20);
+    TIMSK |= 1 << TOIE0;
     sei();
     timer = 0;
 }

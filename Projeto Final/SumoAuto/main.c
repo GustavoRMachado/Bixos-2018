@@ -5,80 +5,61 @@
 #include "sensors.h"
 #include "motors.h"
 #include "timer.h"
+#include "usart.h"
 
-void virarEsquerda(){
-     motors(0, 50);
+#define VEL_MAX 180
+#define VEL_MED 120
+#define LINE_THRESHOLD 600
+#define DISTANCE_THRESHOLD 400
+
+void check_edge(){
+    
+    update_line_sensors();
+
+    if (line_sensors[0] < LINE_THRESHOLD && line_sensors[1] < LINE_THRESHOLD){
+        motors (-VEL_MED, -VEL_MED);
+        _delay_ms(400);
+    }
+
+    if (line_sensors[0] < LINE_THRESHOLD && line_sensors[1] > LINE_THRESHOLD){
+        motors (VEL_MED, -VEL_MED);
+        _delay_ms(350);
+    }
+
+    if (line_sensors[0] > LINE_THRESHOLD && line_sensors[1] < LINE_THRESHOLD){
+        motors (-VEL_MED, VEL_MED);
+        _delay_ms(350);
+    }
 }
 
-void virarDireita(){
-     motors(50, 0);
+int facing(){ //funçao que verifica se o adversario esta frente a frente
+
+    update_distance_sensors();
+
+    return (distance_sensors[0] > DISTANCE_THRESHOLD || distance_sensors[1] > DISTANCE_THRESHOLD);
+}
+
+void search(){ //funçao que gira o sumo ate ficar de frente para o adversario
+
+        motors (0, VEL_MED);
 }
 
 int main () {
+    
     motors_init();
     timer_init();
     sensors_init();
-    int velL = 50, velR = 50, estrategia = 0, relogio = 0;
+    usart_init();
+
     for (;;) {
-        if(estrategia == 0){
-            if(line_sensors[0] > 500){
-               virarDireita();
-            }
-            if(line_sensors[1] > 500){
-                virarEsquerda();               
-            }
-            if(distance_sensors[0]> 1000 && distance_sensors[1] > 1000){
-                motors(255,255);
-            }else{
-                motors(-255, 255);
-            }
-        }else{
-            if(line_sensors[0] > 500){
-                virarDireita();
-            }
-            if(line_sensors[1] > 500){
-                virarEsquerda();
-            }
-            if(distance_sensors[0]> 1000){
-                relogio = get_tick() + 400;
-                while(relogio > get_tick()){
-                    update_line_sensors();
-                    if(line_sensors[0] < 500 && line_sensors[1] < 500)
-                    motors(255,-255);
-                    else if (line_sensors[0] > 500){
-                        virarDireita();
-                    }else if{
-                        virarEsquerda();
-                    }
-                    relogio ++;
-                }
-                relogio = get_tick() + 400;
-                while(relogio > get_tick()){
-                    motors(255,255);
-                    relogio ++;
-                }
-            }else if(distance_sensors[1] > 1000){
-                  relogio = get_tick() + 400;
-                while(relogio > get_tick()){
-                    update_line_sensors();
-                    if(line_sensors[0] < 500 || line_sensors[1] < 500)
-                    motors(255,-255);
-                    else if (line_sensors[0] > 500){
-                        virarEsquerda();
-                    }else if{
-                        virarDireita();
-                    }
-                    relogio ++;
-                }
-                relogio = get_tick() + 400;
-                while(relogio > get_tick()){
-                    motors(255,255);
-                    relogio ++;
-                }
-            }else{
-                motors(-255, 255);
-            }
-        }
+        
+        check_edge();
+
+        if (facing()) //se estiver de frente para o adversario, acelera em direção a ele
+           motors (VEL_MAX, VEL_MAX);
+        else
+           search(); //se não estiver de frente, procura o adversario
     }
+
     return 0;
 }
